@@ -1,0 +1,19 @@
+---
+import { SITE } from '../consts';
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-[var(--color-border)] mt-24">
+  <div
+    class="max-w-5xl mx-auto px-6 py-8 flex items-center justify-between text-sm text-[var(--color-text-dim)] flex-wrap gap-4"
+  >
+    <span>© {year} {SITE.author}</span>
+    <a
+      href={SITE.github}
+      class="hover:text-[var(--color-text)] transition-colors"
+      rel="noopener"
+    >
+      source on github
+    </a>
+  </div>
+</footer>

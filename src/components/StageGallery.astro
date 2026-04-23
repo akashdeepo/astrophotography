@@ -1,0 +1,30 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  stages: { image: ImageMetadata; caption: string }[];
+}
+
+const { stages } = Astro.props;
+---
+
+<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+  {
+    stages.map((s) => (
+      <figure>
+        <Image
+          src={s.image}
+          alt={s.caption}
+          widths={[400, 800]}
+          sizes="(max-width: 768px) 50vw, 300px"
+          loading="lazy"
+          class="w-full aspect-[4/3] object-cover border border-[var(--color-border)]"
+        />
+        <figcaption class="mt-2 text-xs font-mono text-[var(--color-text-dim)]">
+          {s.caption}
+        </figcaption>
+      </figure>
+    ))
+  }
+</div>

@@ -1,0 +1,46 @@
+---
+import { SITE, NAV } from '../consts';
+
+const base = import.meta.env.BASE_URL;
+const currentPath = Astro.url.pathname;
+
+// Normalize href with base so links work under /astrophotography/.
+const withBase = (href: string) => {
+  if (href === '/') return base;
+  return `${base.replace(/\/$/, '')}${href}`;
+};
+
+const isActive = (href: string) => {
+  const target = withBase(href);
+  if (target === base) return currentPath === base || currentPath === base.slice(0, -1);
+  return currentPath.startsWith(target);
+};
+---
+
+<header class="border-b border-[var(--color-border)]">
+  <div class="max-w-5xl mx-auto px-6 py-6 flex items-baseline justify-between gap-6 flex-wrap">
+    <a href={base} class="group no-underline">
+      <span class="font-serif text-2xl tracking-tight">{SITE.title}</span>
+      <span class="text-[var(--color-text-dim)] text-sm ml-2 hidden sm:inline">
+        — {SITE.subtitle}
+      </span>
+    </a>
+    <nav class="flex gap-6 text-sm">
+      {
+        NAV.map((item) => (
+          <a
+            href={withBase(item.href)}
+            class:list={[
+              'transition-colors no-underline',
+              isActive(item.href)
+                ? 'text-[var(--color-accent)]'
+                : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)]',
+            ]}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>

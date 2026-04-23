@@ -1,0 +1,77 @@
+---
+import { TAGS, TAG_LABELS } from '../consts';
+
+interface Props {
+  availableTags: readonly string[]; // tags that actually appear in posts
+}
+
+const { availableTags } = Astro.props;
+const tagsToShow = TAGS.filter((t) => availableTags.includes(t));
+---
+
+<div
+  class="flex flex-wrap gap-2 text-xs font-mono"
+  data-tag-filter
+  role="group"
+  aria-label="Filter posts by tag"
+>
+  <button
+    type="button"
+    class="filter-btn px-3 py-1 border border-[var(--color-accent)] text-[var(--color-accent)] hover:bg-[var(--color-accent)] hover:text-[var(--color-bg)] transition-colors"
+    data-tag="all"
+    data-active="true"
+    aria-pressed="true"
+  >
+    All
+  </button>
+  {
+    tagsToShow.map((t) => (
+      <button
+        type="button"
+        class="filter-btn px-3 py-1 border border-[var(--color-border)] text-[var(--color-text-muted)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors"
+        data-tag={t}
+        data-active="false"
+        aria-pressed="false"
+      >
+        {TAG_LABELS[t as keyof typeof TAG_LABELS]}
+      </button>
+    ))
+  }
+</div>
+
+<script>
+  // Filter post cards by tag. State lives only in the DOM (no storage).
+  const root = document.querySelector<HTMLElement>('[data-tag-filter]');
+  if (root) {
+    const buttons = root.querySelectorAll<HTMLButtonElement>('.filter-btn');
+    const cards = document.querySelectorAll<HTMLElement>('[data-tags]');
+
+    const apply = (tag: string) => {
+      cards.forEach((card) => {
+        const tags = (card.dataset.tags ?? '').split(' ');
+        const show = tag === 'all' || tags.includes(tag);
+        card.style.display = show ? '' : 'none';
+      });
+      buttons.forEach((b) => {
+        const active = b.dataset.tag === tag;
+        b.dataset.active = String(active);
+        b.setAttribute('aria-pressed', String(active));
+        if (active) {
+          b.classList.add('bg-[var(--color-accent)]', 'text-[var(--color-bg)]');
+          b.classList.remove('text-[var(--color-text-muted)]', 'text-[var(--color-accent)]');
+        } else {
+          b.classList.remove('bg-[var(--color-accent)]', 'text-[var(--color-bg)]');
+          if (b.dataset.tag === 'all') {
+            b.classList.add('text-[var(--color-accent)]');
+          } else {
+            b.classList.add('text-[var(--color-text-muted)]');
+          }
+        }
+      });
+    };
+
+    buttons.forEach((b) => {
+      b.addEventListener('click', () => apply(b.dataset.tag ?? 'all'));
+    });
+  }
+</script>

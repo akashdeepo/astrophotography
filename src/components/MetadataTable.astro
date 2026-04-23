@@ -1,0 +1,51 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+}
+
+const { post } = Astro.props;
+const d = post.data;
+
+// Rows are pushed conditionally so optional fields simply don't render.
+type Row = { label: string; value: string | number };
+const rows: Row[] = [];
+
+rows.push({ label: 'Target', value: d.target });
+rows.push({
+  label: 'Captured',
+  value: d.capturedAt.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }),
+});
+if (d.location) rows.push({ label: 'Location', value: d.location });
+if (d.direction) rows.push({ label: 'Direction', value: d.direction });
+if (d.bortle !== undefined) rows.push({ label: 'Bortle class', value: d.bortle });
+rows.push({ label: 'Camera', value: d.camera });
+rows.push({ label: 'Exposure', value: d.exposure });
+rows.push({ label: 'Frames', value: d.frames });
+if (d.processingSoftware.length > 0)
+  rows.push({ label: 'Processing', value: d.processingSoftware.join(', ') });
+if (d.processingNotes) rows.push({ label: 'Notes', value: d.processingNotes });
+---
+
+<table class="font-mono text-sm w-full border-collapse">
+  <tbody>
+    {
+      rows.map((row) => (
+        <tr class="border-b border-[var(--color-border)]">
+          <th
+            scope="row"
+            class="text-left py-2 pr-6 text-[var(--color-text-dim)] font-normal align-top w-44"
+          >
+            {row.label}
+          </th>
+          <td class="py-2 text-[var(--color-text)]">{row.value}</td>
+        </tr>
+      ))
+    }
+  </tbody>
+</table>

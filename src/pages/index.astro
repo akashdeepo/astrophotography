@@ -1,0 +1,84 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import { SITE } from '../consts';
+
+// Published, non-draft posts, newest first.
+const allPosts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.capturedAt.valueOf() - a.data.capturedAt.valueOf()
+);
+
+// Hero: first post flagged `featured: true`, falling back to the newest post.
+const hero = allPosts.find((p) => p.data.featured) ?? allPosts[0];
+const recent = allPosts.slice(0, 6);
+
+const base = import.meta.env.BASE_URL;
+const heroHref = hero ? `${base.replace(/\/$/, '')}/posts/${hero.id}/` : '';
+---
+
+<BaseLayout>
+  <section class="max-w-5xl mx-auto px-6 pt-10 pb-16">
+    <div class="max-w-2xl mb-12">
+      <h1 class="font-serif text-4xl md:text-5xl leading-tight mb-4">
+        {SITE.title}
+      </h1>
+      <p class="text-[var(--color-text-muted)] text-lg leading-relaxed">
+        A journal of what I can see from the ground with a phone and patience —
+        notes, metadata, and before/after comparisons from each session at the
+        eyepiece of my Pixel.
+      </p>
+      <p class="text-[var(--color-text-dim)] text-sm mt-4 font-mono">
+        — {SITE.author}, Lubbock, TX
+      </p>
+    </div>
+
+    {
+      hero && (
+        <a href={heroHref} class="block group mb-16 no-underline">
+          <div class="overflow-hidden border border-[var(--color-border)] bg-[var(--color-bg-elevated)]">
+            <Image
+              src={hero.data.afterImage}
+              alt={hero.data.title}
+              widths={[800, 1200, 1600, 2000]}
+              sizes="(max-width: 1024px) 100vw, 960px"
+              loading="eager"
+              class="w-full aspect-[16/10] object-cover transition-opacity group-hover:opacity-95"
+            />
+          </div>
+          <div class="mt-4 flex items-baseline justify-between flex-wrap gap-2">
+            <h2 class="font-serif text-2xl group-hover:text-[var(--color-accent)] transition-colors">
+              {hero.data.title}
+            </h2>
+            <span class="text-sm text-[var(--color-text-dim)] font-mono">
+              {hero.data.capturedAt.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+              })}
+            </span>
+          </div>
+          <p class="mt-2 text-[var(--color-text-muted)] max-w-2xl">
+            {hero.data.description}
+          </p>
+        </a>
+      )
+    }
+
+    {
+      recent.length > 1 && (
+        <section>
+          <h2 class="font-serif text-xl mb-6 text-[var(--color-text-muted)]">
+            Recent posts
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {recent.map((p) => (
+              <PostCard post={p} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+  </section>
+</BaseLayout>

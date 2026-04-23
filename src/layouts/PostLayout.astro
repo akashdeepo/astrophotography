@@ -1,0 +1,100 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+import BeforeAfterSlider from '../components/BeforeAfterSlider.astro';
+import StageGallery from '../components/StageGallery.astro';
+import MetadataTable from '../components/MetadataTable.astro';
+import { TAG_LABELS } from '../consts';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+}
+
+const { post } = Astro.props;
+const { data } = post;
+
+const dateFmt = (d: Date) =>
+  d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<BaseLayout
+  title={data.title}
+  description={data.description}
+  ogImage={data.afterImage.src}
+>
+  <article class="max-w-5xl mx-auto px-6 py-10">
+    <header class="mb-8">
+      <div class="flex flex-wrap gap-2 text-xs uppercase tracking-wider text-[var(--color-text-dim)] mb-3">
+        {data.tags.map((tag) => <span>{TAG_LABELS[tag]}</span>)}
+      </div>
+      <h1 class="font-serif text-4xl md:text-5xl leading-tight mb-3">{data.title}</h1>
+      <p class="text-[var(--color-text-muted)] text-sm">
+        Captured {dateFmt(data.capturedAt)} · Published {dateFmt(data.publishedAt)}
+      </p>
+    </header>
+
+    <div class="mb-10">
+      <BeforeAfterSlider
+        before={data.beforeImage}
+        after={data.afterImage}
+        beforeLabel="Original"
+        afterLabel="Processed"
+      />
+      <p class="text-xs text-[var(--color-text-dim)] mt-3 font-mono">
+        drag the slider — left: original phone JPG · right: processed in
+        {data.processingSoftware.join(', ') || 'post'}
+      </p>
+    </div>
+
+    {
+      data.stages && data.stages.length > 0 && (
+        <section class="mb-12">
+          <h2 class="font-serif text-xl mb-4 text-[var(--color-text-muted)]">
+            Processing stages
+          </h2>
+          <StageGallery stages={data.stages} />
+        </section>
+      )
+    }
+
+    <section class="prose-astro mb-12">
+      <slot />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="font-serif text-xl mb-4 text-[var(--color-text-muted)]">Metadata</h2>
+      <MetadataTable post={post} />
+    </section>
+
+    <section class="mb-10">
+      <h2 class="font-serif text-xl mb-4 text-[var(--color-text-muted)]">Downloads</h2>
+      <ul class="text-sm font-mono space-y-2">
+        <li>
+          <a
+            href={data.beforeImage.src}
+            download
+            class="text-[var(--color-accent)] hover:text-[var(--color-accent-hover)]"
+          >
+            ↓ original (phone JPG)
+          </a>
+          <span class="text-[var(--color-text-dim)] ml-2">
+            {data.beforeImage.width}×{data.beforeImage.height}
+          </span>
+        </li>
+        <li>
+          <a
+            href={data.afterImage.src}
+            download
+            class="text-[var(--color-accent)] hover:text-[var(--color-accent-hover)]"
+          >
+            ↓ processed
+          </a>
+          <span class="text-[var(--color-text-dim)] ml-2">
+            {data.afterImage.width}×{data.afterImage.height}
+          </span>
+        </li>
+      </ul>
+    </section>
+  </article>
+</BaseLayout>

@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../consts';
+---
+
+<BaseLayout
+  title="About"
+  description="About Akash Deep and the gear and workflow behind Deep Field."
+>
+  <section class="max-w-3xl mx-auto px-6 py-10">
+    <h1 class="font-serif text-4xl mb-6">About</h1>
+
+    <div class="prose-astro">
+      <p>
+        I'm {SITE.author}, and this is my running record of learning to process
+        astrophotography from the ground up. I'm based in Lubbock, Texas — flat
+        West-Texas horizons, dry skies more nights than not, and enough ambient
+        light to make every photo a small argument with the background gradient.
+      </p>
+      <p>
+        The point of this site is to document my progress honestly: every post
+        has a before/after slider so the phone's raw JPG sits next to whatever I
+        managed to pull out of it. If a night produced something boring or
+        broken, I'll try to keep it here anyway, because the failures are where
+        the learning lives.
+      </p>
+
+      <h2 class="font-serif text-2xl mt-10 mb-3">Gear</h2>
+      <ul class="list-disc pl-5 space-y-1">
+        <li>
+          <strong>Google Pixel 9 Pro XL</strong> — Night Mode for long
+          single-frame exposures; occasional tripod; no tracker, no telescope.
+        </li>
+      </ul>
+      <p class="text-sm text-[var(--color-text-dim)] mt-2">
+        This list will grow as I grow. For now it's honest.
+      </p>
+
+      <h2 class="font-serif text-2xl mt-10 mb-3">Workflow</h2>
+      <ol class="list-decimal pl-5 space-y-2">
+        <li>Scout a dark-ish patch of sky, check the moon phase and forecast.</li>
+        <li>
+          Shoot in Night Mode — usually one long exposure, sometimes a few to
+          compare.
+        </li>
+        <li>
+          Pull the JPG into <strong>Siril</strong> for background extraction,
+          histogram stretching, and color calibration.
+        </li>
+        <li>
+          Finish with fine saturation and crop in whatever editor is closest to
+          hand.
+        </li>
+        <li>
+          Write the post, drop the files in the right folder, push to GitHub.
+        </li>
+      </ol>
+
+      <h2 class="font-serif text-2xl mt-10 mb-3">Contact</h2>
+      <p>
+        Site source:
+        <a href={SITE.github}>{SITE.github.replace('https://', '')}</a>.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
